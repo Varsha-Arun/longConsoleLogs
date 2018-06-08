@@ -11,10 +11,8 @@ build:
     - echo "hello"
     - echo "hello"
     - echo "hello"
-    - echo "hello"
-    
-    - echo "hello"
-    
+    - echo "hello"    
+    - echo "hello"    
     - echo "hello"
     - echo "hello"
     - echo "hello"
@@ -1035,40 +1033,27 @@ build:
 resources:
 
 #CLICONFIG
-  - name: ar-dockercli
+  - name: long-dockercli
     type: cliConfig
     integration: "docker"
     
-  - name: ar-awscli
-    type: cliConfig
-    integration: "awskeys"
-
-  - name: ar-gclcli
-    type: cliConfig
-    integration: "gcl"
     
 #CLUSTERS
-  - name: ar-ddccluster
+  - name: long-ddccluster
     type: cluster
     integration: ddc
     pointer:
       sourceName : "nothing" #we can anything because it is mandatory but ddc doesnot have clusters
 
-  - name: ar-awscluster
-    type: cluster
-    integration: awskeys
-    versionTemplate: 
-      region: us-east-1
-      sourceName: clu1
-      
+  
 #DOCKER OPTIONS
-  - name: ar-dockeroptions
+  - name: long-dockeroptions
     type: dockerOptions
     version:
       memory: 100
 
 #FILES
-  - name: ar-files
+  - name: long-files
     type: file
     integration: docker
     pointer:
@@ -1077,7 +1062,7 @@ resources:
       versionName: "random-2"
 
 #GITREPO:
-  - name: ar-gitrepo
+  - name: long-gitrepo
     type: gitRepo
     integration: "github"
     pointer:
@@ -1092,7 +1077,7 @@ resources:
       buildOnTagPush: true
       
 #IMAGES
-  - name: ar-image
+  - name: long-image
     type: image
     integration: docker
     pointer:
@@ -1100,7 +1085,7 @@ resources:
     seed:
       versionName: "deploy.1"
   
-  - name: ar-loadBalancerImage
+  - name: long-loadBalancerImage
     type: image
     integration: gcl
     pointer:
@@ -1110,12 +1095,12 @@ resources:
       versionName: "latest"
 
 #INTEGRATION
-  - name: ar-dockerintegration
+  - name: long-dockerintegration
     type: integration
     integration: "docker"
 
 #LOAD BALANCER      
-  - name: ar-gke-service-lb
+  - name: long-gke-service-lb
     type: loadBalancer 
     integration: gcl
     pointer:
@@ -1140,7 +1125,7 @@ resources:
  #     sourceName: EC2Contai-EcsElast-GPCOXIIKWPUJSREYA
 
 #NOTIFICATIONS
-  - name: ar-slack
+  - name: long-slack
     type: notification
     integration: "slack"
     pointer:
@@ -1150,7 +1135,7 @@ resources:
         - "@shiptest-rc-ow"
         - "#random"
    
-  - name: ar-hipchat
+  - name: long-hipchat
     type: notification
     integration: "notify-hipchat"
     pointer:
@@ -1160,7 +1145,7 @@ resources:
         - "@shiptest.rc.ow"        
         - "#random"
    
-  - name: ar-irc
+  - name: long-irc
     type: notification
     #integration: "irc"
     versionTemplate:
@@ -1168,7 +1153,7 @@ resources:
       recipients:
         - "#rc-test"
    
-  - name: ar-email
+  - name: long-email
     type: notification
     #integration: "email"
     versionTemplate:
@@ -1177,7 +1162,7 @@ resources:
         - "varsha@shippable.com"
 
 #PARAMS
-  - name: ar-params
+  - name: long-params
     type: params
     version:
       params:
@@ -1192,24 +1177,24 @@ resources:
       
         
 #REPLICAS
-  - name: ar-replica
+  - name: long-replica
     type: replicas
     version:
       count: 2
 
 #STATE
-  - name: ar-state
+  - name: long-state
     type: state
     
 #TIME
-  - name: ar-testtime
+  - name: long-testtime
     type: time
     seed:
       interval: "1 1 1 * *" #"*/9 * 9 9 *"
       
 #VERSIONS
 
-  - name: ar-version
+  - name: long-version
     type: version
     seed:
       versionName: "6.1.2"
@@ -1217,16 +1202,16 @@ resources:
 jobs:
 
 #DEPLOY  
-  - name: ar-awsdeploy
+  - name: long-ddcdeploy
     type: deploy
     allowPublicAccess: true
     steps:
-      - IN: ar-awscluster
-      - IN: ar-manifest
+      - IN: long-ddccluster
+      - IN: long-manifest
         #switch: off
-      - IN: ar-params
-      - IN: ar-dockeroptions
-      - IN: ar-replica
+      - IN: long-params
+      - IN: long-dockeroptions
+      - IN: long-replica
         #versionNumber: 1000 
         
 #JENKINSJOB
@@ -1239,13 +1224,13 @@ jobs:
  #     - OUT: "ar-files" 
 
 #MANIFESTS
-  - name: ar-manifest
+  - name: long-manifest
     type: manifest
     steps:
-      - IN: ar-image
+      - IN: long-image
       # versionNumber: 100
       #- OUT: ar-image4invalidformat
-      - IN: ar-tg1
+      - IN: long-tg1
     allowPublicAccess: true
 
 #PROVISION
@@ -1255,91 +1240,42 @@ jobs:
  #   steps:
   #    - IN: ar-loadBalancerImage
   
-  - name: ar-deployServicelb
+  - name: long-deployServicelb
     type: provision
     steps:
-      - IN: ar-gke-service-lb
+      - IN: long-gke-service-lb
       
 #RELEASE
-  - name: ar-release
+  - name: long-release
     type: release
     #allowPublicAccess: true
     on_start:
-      - NOTIFY: ar-slack
+      - NOTIFY: long-slack
     steps:
-      - IN: ar-version
+      - IN: long-version
          #versionName: testrelease
-      - IN: ar-inrunSh
+      - IN: long-inrunSh
       - TASK: managed
         bump: rc
        #- IN: ar-tg3
     flags:
-      - ar-release    
-    on_success:
-      - NOTIFY: ar-slack
-      - NOTIFY: ar-hipchat
-      - NOTIFY: ar-irc
-      - NOTIFY: ar-email
-    on_failure:
-      - NOTIFY: ar-slack
-      - NOTIFY: ar-hipchat
-      - NOTIFY: ar-irc
-      - NOTIFY: ar-email
+      - long-release    
+  
 
-#RUNCI
-  - name: sample_pipelines_runCI
-    type: runCI
-    #allowPublicAccess: true
-    on_start:
-     - NOTIFY: ar-slack
-    steps:
-      - IN: ar-dockercli
-         #versionName: testrelease
-    flags:
-      - sample_pipelines_runCI
-      
-#RUNSH      
-  - name: ar-inrunSh
-    type: runSh
-    allowPublicAccess: false
-    steps:
-      - IN: ar-gitrepo
-        showBuildStatus: true
-      # versionName: testsha
-      - TASK:
-          runtime:
-            options:
-              imageName: "drydock/u16all" #"drydock/aarch64_u16all"
-              imageTag: master
-          script: 
-            - ls
-            - ./IN/ar-gitrepo/gitRepo/echo.sh
-            - export FOO=foo1
-            - echo $FOO
-            - lsb_release -a
-            - docker --version
-            - docker info
-            - docker ps 
-     # - OUT: ar-image2invalidimg    
-    on_success:
-      - script: echo 'Success'
-    on_failure:
-      - script: echo 'Failure runSh'
-      - NOTIFY: ar-slack
 
       
-  - name: runshlongconsole
+  - name: runShlongconsolelongs
     type: runSh
     steps:
-      - IN: ar-gitrepo
+      - IN: long-gitrepo
       # versionName: testsha
-      - IN: ar-dockercli
-      - IN: ar-testtime
+      - IN: long-dockercli
+      - IN: long-testtime
       #- IN: ar-loadbalancer
-      - IN: ar-files
+      - IN: long-files
       - TASK:
         - script: ls
-        - script: ./IN/ar-gitrepo/gitRepo/echo.sh
+        - script: ./IN/long-gitrepo/gitRepo/echo.sh
         - script: echo "hello"
         - script: echo "hello"
         - script: echo "hello"
