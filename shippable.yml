@@ -1038,7 +1038,6 @@ jobs:
      
       - TASK:
         - script: ls
-        - script: ./IN/long-gitrepo/gitRepo/echo.sh
         - script: echo "hello"
         - script: echo "hello"
         - script: echo "hello"
