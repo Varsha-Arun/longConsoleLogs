@@ -1030,70 +1030,12 @@ build:
     - echo "hello"
 
 
-resources:
-
-#CLICONFIG
-  - name: long-dockercli
-    type: cliConfig
-    integration: "docker"
-    
-    
-#CLUSTERS
-  - name: long-ddccluster
-    type: cluster
-    integration: ddc
-    pointer:
-      sourceName : "nothing" #we can anything because it is mandatory but ddc doesnot have clusters
-
-  
-#DOCKER OPTIONS
-  - name: long-dockeroptions
-    type: dockerOptions
-    version:
-      memory: 100
-
-#FILES
-  - name: long-files
-    type: file
-    integration: docker
-    pointer:
-      sourceName: "random"
-    seed:
-      versionName: "random-2"
-
-#GITREPO:
-  - name: long-gitrepo
-    type: gitRepo
-    integration: "github"
-    pointer:
-      sourceName: "Varsha-Arun/sample-script"
-      branch: master
-      #tags:
-       # only:
-        #  - v1.*
-      buildOnCommit: true    
-      buildOnPullRequest: true
-      buildOnRelease: true
-      buildOnTagPush: true
-      
-#IMAGES
-  - name: long-image
-    type: image
-    integration: docker
-    pointer:
-      sourceName: "shippabledocker/pipelinev2"
-    seed:
-      versionName: "deploy.1"
+jobs:
       
   - name: runShlongconsolelongs
     type: runSh
     steps:
-      - IN: long-gitrepo
-      # versionName: testsha
-      #- IN: long-dockercli
-      #- IN: long-testtime
-      #- IN: ar-loadbalancer
-      - IN: long-files
+     
       - TASK:
         - script: ls
         - script: ./IN/long-gitrepo/gitRepo/echo.sh
